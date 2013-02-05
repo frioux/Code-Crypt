@@ -3,15 +3,13 @@
 use 5.16.1;
 use warnings;
 
-use Crypt::CBC;
+use Crypt::OpenSSL::AES;
 use Digest::MD5 'md5_hex';
 use MIME::Base64 'encode_base64';
 
 my $target_hostname = sprintf('% 32s', 'wanderlust');
-my $cipher = Crypt::CBC->new(
-   -key    => $target_hostname,
-   -cipher => "Crypt::OpenSSL::AES"
-);
+my $cipher = Crypt::OpenSSL::AES->new($target_hostname);
+
 my $bootstrap = <<'BOOTSTRAP';
 #!/usr/bin/env perl
 
@@ -23,7 +21,7 @@ use MIME::Base64 'decode_base64';
 
 my $key = do {
    use Sys::Hostname;
-   hostname();
+   sprintf('% 32s', hostname())
 };
 
 my $cipher = Crypt::OpenSSL::AES->new($key);
@@ -31,11 +29,11 @@ my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
 
 eval($cipher->decrypt($ciphertext));
 
-die $@ if $@;;;;;;;;;;
+die $@ if $@
 BOOTSTRAP
-print length $bootstrap;
+
 my $code = <<'CODE';
-say "hello world!"
+say "helowrld!"
 CODE
 
 my $ciphertext = encode_base64($cipher->encrypt($code));
