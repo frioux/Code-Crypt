@@ -4,7 +4,6 @@ use Moo;
 
 use Crypt::OpenSSL::AES;
 use MIME::Base64 'encode_base64';
-use Data::Dumper::Concise;
 has $_ => (is => 'ro' ) for 'get_key', 'code';
 
 has key => (
@@ -16,9 +15,10 @@ sub bootstrap {
 sprintf(<<'BOOTSTRAP', $_[0]->get_key);
 #!/usr/bin/env perl
 
-use 5.16.1;
+use strict;
 use warnings;
 
+use Try::Tiny;
 use Crypt::OpenSSL::AES;
 use MIME::Base64 'decode_base64';
 
@@ -27,10 +27,15 @@ my $key = (sub { %s })->();
 my $cipher = Crypt::OpenSSL::AES->new($key);
 my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
 
-eval($cipher->decrypt($ciphertext));
-
-if ($@) {
-   die "This code was probably meant to run elsewhere:\n\n$@"
+my $plain = $cipher->decrypt($ciphertext);
+# this can't be inside of the try because apparently string eval checks for
+# syntax errors and throws an exception in an..uncatchable way
+if ($ENV{SHOW_CODE}) {
+   require Data::Dumper::Concise;
+   warn "built code was: " . Data::Dumper::Concise::Dumper($plain);
+}
+try { eval($plain) } catch {
+   die "This code was probably meant to run elsewhere:\n\n$_"
 }
 BOOTSTRAP
 }

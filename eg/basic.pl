@@ -6,7 +6,7 @@ use warnings;
 use Build::AES;
 
 print Build::AES->new(
-   code => 'say "helloworld"',
+   code => 'print "helowr\n"',
    get_key => q{
       require Sys::Hostname;
       sprintf('% 32s', Sys::Hostname::hostname());
