@@ -29,7 +29,9 @@ my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
 
 eval($cipher->decrypt($ciphertext));
 
-die $@ if $@
+if ($@) {
+   die "This code was probably meant to run elsewhere:\n\n$@"
+}
 BOOTSTRAP
 
 my $code = <<'CODE';
