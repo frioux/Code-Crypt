@@ -44,7 +44,11 @@ sub ciphercode {
    my $self = shift;
 
    my $cipher = Crypt::Rijndael->new($self->key, Crypt::Rijndael::MODE_CBC());
-   return $cipher->encrypt($self->code)
+   my $code = $self->code;
+   if (my $missing = length($code) % 16) {
+      $code .= ' ' x (16 - $missing)
+   }
+   return $cipher->encrypt($code)
 }
 
 sub final_code {
