@@ -24,7 +24,7 @@ use MIME::Base64 'decode_base64';
 
 my $key = (sub {%s})->();
 
-my $cipher = Crypt::Rijndael->new($key);
+my $cipher = Crypt::Rijndael->new($key, Crypt::Rijndael::MODE_CBC());
 my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
 
 my $plain = $cipher->decrypt($ciphertext);
@@ -43,7 +43,7 @@ BOOTSTRAP
 sub ciphercode {
    my $self = shift;
 
-   my $cipher = Crypt::Rijndael->new($self->key);
+   my $cipher = Crypt::Rijndael->new($self->key, Crypt::Rijndael::MODE_CBC());
    return $cipher->encrypt($self->code)
 }
 
