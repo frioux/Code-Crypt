@@ -8,8 +8,8 @@ use Build::AES;
 print Build::AES->new(
    code => 'print "helowr\n"',
    get_key => q{
-      require Sys::Hostname;
-      sprintf('% 32s', Sys::Hostname::hostname());
-   },
-   key => sprintf('% 32s', 'wanderlust'),
+   require Sys::Hostname;
+   sprintf('% 32s', $] . Sys::Hostname::hostname());
+},
+   key => sprintf('% 32s', $] . 'wanderlust'),
 )->final_code;

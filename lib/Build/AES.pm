@@ -2,7 +2,7 @@ package Build::AES;
 
 use Moo;
 
-use Crypt::OpenSSL::AES;
+use Crypt::Rijndael;
 use MIME::Base64 'encode_base64';
 has $_ => (is => 'ro' ) for 'get_key', 'code';
 
@@ -19,12 +19,12 @@ use strict;
 use warnings;
 
 use Try::Tiny;
-use Crypt::OpenSSL::AES;
+use Crypt::Rijndael;
 use MIME::Base64 'decode_base64';
 
-my $key = (sub { %s })->();
+my $key = (sub {%s})->();
 
-my $cipher = Crypt::OpenSSL::AES->new($key);
+my $cipher = Crypt::Rijndael->new($key);
 my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
 
 my $plain = $cipher->decrypt($ciphertext);
@@ -43,7 +43,7 @@ BOOTSTRAP
 sub ciphercode {
    my $self = shift;
 
-   my $cipher = Crypt::OpenSSL::AES->new($self->key);
+   my $cipher = Crypt::Rijndael->new($self->key);
    return $cipher->encrypt($self->code)
 }
 
