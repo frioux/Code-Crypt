@@ -3,45 +3,13 @@
 use 5.16.1;
 use warnings;
 
-use Crypt::OpenSSL::AES;
-use Digest::MD5 'md5_hex';
-use MIME::Base64 'encode_base64';
+use Build::AES;
 
-my $target_hostname = sprintf('% 32s', 'wanderlust');
-my $cipher = Crypt::OpenSSL::AES->new($target_hostname);
-
-my $bootstrap = <<'BOOTSTRAP';
-#!/usr/bin/env perl
-
-use 5.16.1;
-use warnings;
-
-use Crypt::OpenSSL::AES;
-use MIME::Base64 'decode_base64';
-
-my $key = do {
-   use Sys::Hostname;
-   sprintf('% 32s', hostname())
-};
-
-my $cipher = Crypt::OpenSSL::AES->new($key);
-my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
-
-eval($cipher->decrypt($ciphertext));
-
-if ($@) {
-   die "This code was probably meant to run elsewhere:\n\n$@"
-}
-BOOTSTRAP
-
-my $code = <<'CODE';
-say "helowrld!"
-CODE
-
-my $ciphertext = encode_base64($cipher->encrypt($code));
-
-print <<"FINAL"
-$bootstrap
-__DATA__
-$ciphertext
-FINAL
+print Build::AES->new(
+   code => 'say "helloworld"',
+   get_key => q{
+      require Sys::Hostname;
+      sprintf('% 32s', Sys::Hostname::hostname());
+   },
+   key => sprintf('% 32s', 'wanderlust'),
+)->final_code;
