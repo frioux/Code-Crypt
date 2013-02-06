@@ -2,7 +2,7 @@ package Build::AES;
 
 use Moo;
 
-use Crypt::Rijndael;
+use Crypt::CBC;
 use MIME::Base64 'encode_base64';
 has $_ => (is => 'ro' ) for 'get_key', 'code';
 
@@ -19,12 +19,16 @@ use strict;
 use warnings;
 
 use Try::Tiny;
-use Crypt::Rijndael;
+use Crypt::CBC;
 use MIME::Base64 'decode_base64';
 
 my $key = (sub {%s})->();
 
-my $cipher = Crypt::Rijndael->new($key, Crypt::Rijndael::MODE_CBC());
+my $cipher = Crypt::CBC->new(
+   -key => $key,
+   -cipher => 'Crypt::Rijndael',
+);
+
 my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
 
 my $plain = $cipher->decrypt($ciphertext);
@@ -43,11 +47,12 @@ BOOTSTRAP
 sub ciphercode {
    my $self = shift;
 
-   my $cipher = Crypt::Rijndael->new($self->key, Crypt::Rijndael::MODE_CBC());
+   my $cipher = Crypt::CBC->new(
+      -key => $self->key,
+      -cipher => 'Crypt::Rijndael',
+   );
+
    my $code = $self->code;
-   if (my $missing = length($code) % 16) {
-      $code .= ' ' x (16 - $missing)
-   }
    return $cipher->encrypt($code)
 }
 
