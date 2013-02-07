@@ -6,7 +6,7 @@ use warnings;
 use Build::AES;
 use Build::Nester;
 
-print Build::Nester->new(
+print "#!/usr/bin/env perl\n\n" . Build::Nester->new(
    code => 'print "hello world!\n";',
    builders => [
       Build::AES->new(

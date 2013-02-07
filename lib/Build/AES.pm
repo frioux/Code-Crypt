@@ -11,8 +11,6 @@ has key => ( is => 'ro' );
 
 sub bootstrap {
 sprintf(<<'BOOTSTRAP', $_[0]->get_key);
-#!/usr/bin/env perl
-
 use strict;
 use warnings;
 
