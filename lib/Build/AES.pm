@@ -7,10 +7,7 @@ use MIME::Base64 'encode_base64';
 has code => ( is => 'rw' );
 has get_key => (is => 'ro' );
 
-has key => (
-   is => 'ro',
-   # isa => check length
-);
+has key => ( is => 'ro' );
 
 sub bootstrap {
 sprintf(<<'BOOTSTRAP', $_[0]->get_key);
