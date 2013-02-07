@@ -4,24 +4,25 @@ use 5.16.1;
 use warnings;
 
 use Build::AES;
+use Build::Nester;
 
-my $code = <<'CODE';
-my $c = <<'INNER';
-print "hello world!\n";
-INNER
-
-require Build::AES;
-eval(Build::AES->new(
-   code => $c,
-   get_key => q{ $] },
-   key => $],
-)->final_code)
-CODE
-print Build::AES->new(
-   code => $code,
-   get_key => q{
-   require Sys::Hostname;
-   Sys::Hostname::hostname();
-},
-   key => 'wanderlust',
-)->final_code;
+print Build::Nester->new(
+   code => 'print "hello world!\n";',
+   builders => [
+      Build::AES->new(
+         get_key => q{ $] },
+         key => $],
+      ),
+      Build::AES->new(
+         get_key => q{ $^O },
+         key => $^O,
+      ),
+      Build::AES->new(
+         get_key => q{
+            require Sys::Hostname;
+            Sys::Hostname::hostname();
+         },
+         key => 'wanderlust',
+      ),
+   ],
+)->final_code

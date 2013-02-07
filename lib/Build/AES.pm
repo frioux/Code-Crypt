@@ -4,7 +4,8 @@ use Moo;
 
 use Crypt::CBC;
 use MIME::Base64 'encode_base64';
-has $_ => (is => 'ro' ) for 'get_key', 'code';
+has code => ( is => 'rw' );
+has get_key => (is => 'ro' );
 
 has key => (
    is => 'ro',
