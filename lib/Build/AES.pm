@@ -29,7 +29,8 @@ my $cipher = Crypt::CBC->new(
    -cipher => 'Crypt::Rijndael',
 );
 
-my $ciphertext = do { local $/ = undef; decode_base64(<DATA>) };
+my $ciphertext = decode_base64(<<'DATA');
+%%sDATA
 
 my $plain = $cipher->decrypt($ciphertext);
 # this can't be inside of the try because apparently string eval checks for
@@ -57,11 +58,7 @@ sub ciphercode {
 }
 
 sub final_code {
-   sprintf(<<'FINAL', $_[0]->bootstrap, encode_base64($_[0]->ciphercode));
-%s
-__DATA__
-%s
-FINAL
+   sprintf($_[0]->bootstrap, encode_base64($_[0]->ciphercode));
 }
 
 1;
