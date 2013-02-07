@@ -18,7 +18,6 @@ sprintf(<<'BOOTSTRAP', $_[0]->get_key);
 use strict;
 use warnings;
 
-use Try::Tiny;
 use Crypt::CBC;
 use MIME::Base64 'decode_base64';
 
@@ -33,13 +32,14 @@ my $ciphertext = decode_base64(<<'DATA');
 %%sDATA
 
 my $plain = $cipher->decrypt($ciphertext);
-# this can't be inside of the try because apparently string eval checks for
-# syntax errors and throws an exception in an..uncatchable way
-if ($ENV{SHOW_CODE}) {
-   require Data::Dumper::Concise;
-   warn "built code was: " . Data::Dumper::Concise::Dumper($plain);
-}
-try { eval($plain) } catch {
+local $@ = undef;
+eval($plain);
+if ($@) {
+   local $_ = $@;
+   if ($ENV{SHOW_CODE}) {
+      require Data::Dumper::Concise;
+      warn "built code was: " . Data::Dumper::Concise::Dumper($plain);
+   }
    die "This code was probably meant to run elsewhere:\n\n$_"
 }
 BOOTSTRAP
