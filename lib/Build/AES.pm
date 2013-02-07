@@ -21,7 +21,7 @@ use warnings;
 use Crypt::CBC;
 use MIME::Base64 'decode_base64';
 
-my $key = (sub {%s})->();
+my $key = do {%s};
 
 my $cipher = Crypt::CBC->new(
    -key => $key,
