@@ -3,21 +3,21 @@
 use 5.16.1;
 use warnings;
 
-use Build::AES;
-use Build::Nester;
+use Code::Crypt;
+use Code::Crypt::Graveyard;
 
-print "#!/usr/bin/env perl\n\n" . Build::Nester->new(
+print "#!/usr/bin/env perl\n\n" . Code::Crypt::Graveyard->new(
    code => 'print "hello world!\n";',
    builders => [
-      Build::AES->new(
+      Code::Crypt->new(
          get_key => q{ $] },
          key => $],
       ),
-      Build::AES->new(
+      Code::Crypt->new(
          get_key => q{ $^O },
          key => $^O,
       ),
-      Build::AES->new(
+      Code::Crypt->new(
          get_key => q{
             require Sys::Hostname;
             Sys::Hostname::hostname();

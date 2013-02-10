@@ -3,13 +3,13 @@
 use 5.16.1;
 use warnings;
 
-use Build::AES;
+use Code::Crypt;
 
 my $code = <<'CODE';
 print "hello world!\n";
 print "this code is secret and can't be read unless the user has the key\n";
 CODE
-print "#!/usr/bin/env perl\n\n" . Build::AES->new(
+print "#!/usr/bin/env perl\n\n" . Code::Crypt->new(
    code => $code,
    get_key => q{
    require Sys::Hostname;

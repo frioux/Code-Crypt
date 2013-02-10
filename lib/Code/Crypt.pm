@@ -1,4 +1,4 @@
-package Build::AES;
+package Code::Crypt;
 
 use Moo;
 
@@ -46,15 +46,13 @@ sub ciphercode {
 
    my $cipher = Crypt::CBC->new(
       -key => $self->key,
-      -cipher => 'Crypt::Rijndael',
+      -cipher => $self->cipher,
    );
 
    my $code = $self->code;
    return $cipher->encrypt($code)
 }
 
-sub final_code {
-   sprintf($_[0]->bootstrap, encode_base64($_[0]->ciphercode));
-}
+sub final_code { sprintf $_[0]->bootstrap, encode_base64($_[0]->ciphercode) }
 
 1;
