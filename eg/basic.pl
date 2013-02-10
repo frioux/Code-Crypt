@@ -11,6 +11,7 @@ print "this code is secret and can't be read unless the user has the key\n";
 CODE
 print "#!/usr/bin/env perl\n\n" . Code::Crypt->new(
    code => $code,
+   cipher => 'Crypt::Rijndael',
    get_key => q{
    require Sys::Hostname;
    $] . Sys::Hostname::hostname();

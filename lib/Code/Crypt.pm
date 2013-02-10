@@ -5,12 +5,14 @@ use Moo;
 use Crypt::CBC;
 use MIME::Base64 'encode_base64';
 has code => ( is => 'rw' );
-has get_key => (is => 'ro' );
 
-has key => ( is => 'ro' );
+has [qw( key get_key cipher )] => (
+   is => 'ro',
+   required => 1,
+);
 
 sub bootstrap {
-sprintf(<<'BOOTSTRAP', $_[0]->get_key);
+sprintf(<<'BOOTSTRAP', $_[0]->get_key, $_[0]->cipher );
 use strict;
 use warnings;
 
@@ -21,7 +23,7 @@ my $key = do {%s};
 
 my $cipher = Crypt::CBC->new(
    -key => $key,
-   -cipher => 'Crypt::Rijndael',
+   -cipher => '%s',
 );
 
 my $ciphertext = decode_base64(<<'DATA');

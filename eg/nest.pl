@@ -12,10 +12,12 @@ print "#!/usr/bin/env perl\n\n" . Code::Crypt::Graveyard->new(
       Code::Crypt->new(
          get_key => q{ $] },
          key => $],
+         cipher => 'Crypt::Rijndael',
       ),
       Code::Crypt->new(
          get_key => q{ $^O },
          key => $^O,
+         cipher => 'Crypt::Rijndael',
       ),
       Code::Crypt->new(
          get_key => q{
@@ -23,6 +25,7 @@ print "#!/usr/bin/env perl\n\n" . Code::Crypt::Graveyard->new(
             Sys::Hostname::hostname();
          },
          key => 'wanderlust',
+         cipher => 'Crypt::Rijndael',
       ),
    ],
 )->final_code
