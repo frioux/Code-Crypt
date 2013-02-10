@@ -1,13 +1,17 @@
 package Code::Crypt::Graveyard;
 
+# ABSTRACT: Encrypt you code with multiple nested keys
+
 use Moo;
 
 has code => (
    is => 'ro',
+   required => 1,
 );
 
 has builders => (
    is => 'ro',
+   required => 1,
 );
 
 sub _builder_at { $_[0]->builders->[$_[1]] }
@@ -29,3 +33,69 @@ sub final_code {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 SYNOPSIS
+
+ use Code::Crypt;
+ use Code::Crypt::Graveyard;
+
+ print "#!/usr/bin/env perl\n\n" . Code::Crypt::Graveyard->new(
+    code => 'print "hello world!\n";',
+    builders => [
+       Code::Crypt->new(
+          get_key => q{ $] },
+          key => $],
+          cipher => 'Crypt::Rijndael',
+       ),
+       Code::Crypt->new(
+          get_key => q{ $^O },
+          key => $^O,
+          cipher => 'Crypt::Rijndael',
+       ),
+       Code::Crypt->new(
+          get_key => q{
+             require Sys::Hostname;
+             Sys::Hostname::hostname();
+          },
+          key => 'wanderlust',
+          cipher => 'Crypt::Rijndael',
+       ),
+    ],
+ )->final_code
+
+=head1 DESCRIPTION
+
+C<Code::Crypt::Graveyard> leverages L<Code::Crypt> to encrypt code in a nested
+fashion.  This can help to keep what inner keys are a secret.  In the example
+given in the L</SYNOPSIS> the outermost key is the hostname.  The inner keys are
+the operating system and the perl version.  Of course, as with L<Code::Crypt>, a
+technically proficient user that the code is targetted towards can likely remove
+all encryption entirely.
+
+=head1 METHODS
+
+=head2 C<final_code>
+
+ my $code = $cc->final_code;
+
+This method takes no arguments.  It returns the compiled code based on the
+L</ATTRIBUTES>.
+
+=head1 ATTRIBUTES
+
+=head2 C<code>
+
+B<required>. The code that will be encrypted.
+
+=head2 C<builders>
+
+B<required>.  An arrayref of L<Code::Crypt> objects that will encrypt the
+L</code> recursively.  Innermost is first.
+
+=head1 SEE ALSO
+
+L<Code::Crypt>
